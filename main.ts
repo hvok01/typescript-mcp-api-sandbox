@@ -3,6 +3,7 @@ import z from "zod";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -96,6 +97,7 @@ function getServer() {
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.post("/mcp", async (req: express.Request, res: express.Response) => {
   try {
@@ -130,27 +132,23 @@ app.post("/mcp", async (req: express.Request, res: express.Response) => {
 
 // En modo stateless, GET/DELETE a /mcp no aplican:
 app.get("/mcp", (_req, res) => {
-  res
-    .writeHead(405)
-    .end(
-      JSON.stringify({
-        jsonrpc: "2.0",
-        error: { code: -32000, message: "Method not allowed." },
-        id: null,
-      })
-    );
+  res.writeHead(405).end(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message: "Method not allowed." },
+      id: null,
+    })
+  );
 });
 app.delete("/mcp", (_req, res) => {
-  res
-    .writeHead(405)
-    .end(
-      JSON.stringify({
-        jsonrpc: "2.0",
-        error: { code: -32000, message: "Method not allowed." },
-        id: null,
-      })
-    );
+  res.writeHead(405).end(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message: "Method not allowed." },
+      id: null,
+    })
+  );
 });
 
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT);
